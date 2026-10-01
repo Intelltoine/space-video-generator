@@ -102,7 +102,8 @@ for (const f of ["scripts/vo-script.json", "scripts/assets.json", "scripts/proce
   if (!fs.existsSync(d)) { fs.mkdirSync(path.dirname(d), { recursive: true }); fs.copyFileSync(path.join(dir, f), d); }
 }
 const envp = path.join(dir, ".env");
-if (!fs.existsSync(envp)) fs.writeFileSync(envp, "FAL_KEY=\n");
+// Si FAL_KEY est déjà dans l'environnement (variable du conteneur cloud), on n'écrit pas de .env vide : un `source .env` écraserait la vraie clé.
+if (!fs.existsSync(envp) && !process.env.FAL_KEY) fs.writeFileSync(envp, "FAL_KEY=\n");
 fs.writeFileSync(path.join(dir, ".gitignore"), "node_modules\n.env\nout\npublic/audio\npublic/assets/raw-full\n");
 const planArg = opt("plan", null);
 if (planArg && fs.existsSync(planArg)) fs.copyFileSync(planArg, path.join(dir, "plan.json"));

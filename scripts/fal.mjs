@@ -10,7 +10,8 @@ export function falKey() {
   for (const f of [".env", path.join("..", ".env")]) {
     if (!fs.existsSync(f)) continue;
     const m = fs.readFileSync(f, "utf8").match(/^FAL_KEY=(.*)$/m);
-    if (m) return m[1].trim().replace(/^"|"$/g, "");
+    const v = m && m[1].trim().replace(/^"|"$/g, "");
+    if (v) return v;
   }
   throw new Error("FAL_KEY introuvable : exporte la variable ou ajoute FAL_KEY=... dans .env");
 }
