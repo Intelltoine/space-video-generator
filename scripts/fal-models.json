@@ -1,0 +1,11 @@
+{
+  "_note": "Identifiants d'endpoints fal.ai. Vérifier sur https://fal.ai/models si un appel renvoie 404 et corriger ici.",
+  "tts": "fal-ai/elevenlabs/tts/eleven-v3",
+  "tts_eco": "elevenlabs/tts/eleven-v4-turbo",
+  "stt": "fal-ai/elevenlabs/speech-to-text/scribe-v2",
+  "image": "fal-ai/flux-2-pro",
+  "image_eco": "fal-ai/flux-2",
+  "cutout": "fal-ai/birefnet/v2",
+  "i2v": "fal-ai/kling-video/v2.5-turbo/pro/image-to-video",
+  "i2v_premium": "fal-ai/kling-video/v3/pro/image-to-video"
+}
