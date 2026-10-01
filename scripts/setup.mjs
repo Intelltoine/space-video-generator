@@ -21,7 +21,7 @@ const pkg = {
   private: true, type: "commonjs",
   scripts: { studio: `remotion studio --port ${port}`, render: "remotion render Film out/film.mp4 --gl=angle --codec=h264 --crf=18", typecheck: "tsc --noEmit", stills: "node scripts/stills.mjs --sheet" },
   dependencies: {
-    "@react-three/fiber": "^9.8.1", "@remotion/cli": "4.0.529", "@remotion/google-fonts": "4.0.529", "@remotion/media-utils": "4.0.529",
+    "@react-three/fiber": "^9.8.1", "@remotion/cli": "4.0.529", "@remotion/fonts": "4.0.529", "@remotion/media-utils": "4.0.529",
     "@remotion/noise": "4.0.529", "@remotion/paths": "4.0.529", "@remotion/three": "4.0.529", "@remotion/bundler": "4.0.529", "@remotion/renderer": "4.0.529",
     postprocessing: "^6.39.5", react: "^19.3.0", "react-dom": "^19.3.0", remotion: "4.0.529", three: "^0.186.1",
   },
@@ -39,7 +39,7 @@ function copyDir(src, dst) {
 }
 copyDir(path.join(skill, "templates", "base"), dir);
 fs.mkdirSync(path.join(dir, "scripts"), { recursive: true });
-for (const f of ["fal.mjs", "fal-models.json", "gen-assets.mjs", "process-assets.mjs", "contact-sheet.mjs", "gen-vo.mjs", "build-timeline.mjs", "gen-subs.mjs", "make-audio.mjs", "stills.mjs", "use.mjs"]) {
+for (const f of ["fal.mjs", "fal-models.json", "gen-assets.mjs", "process-assets.mjs", "contact-sheet.mjs", "gen-vo.mjs", "build-timeline.mjs", "gen-subs.mjs", "make-audio.mjs", "stills.mjs", "use.mjs", "browser.mjs", "render.mjs", "ingest.mjs"]) {
   fs.copyFileSync(path.join(skill, "scripts", f), path.join(dir, "scripts", f));
 }
 fs.mkdirSync(path.join(dir, "public", "assets", "raw"), { recursive: true });

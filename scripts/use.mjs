@@ -14,7 +14,7 @@ const opt = (k) => { const i = args.indexOf("--" + k); return i >= 0 ? args[i + 
 const ACTIVE = ".active";
 const FILES = ["scripts/vo-script.json", "scripts/assets.json", "scripts/process.json", "scripts/audio.json",
   "src/film.config.ts", "src/scene/Story.tsx", "src/tags.ts", "src/timeline.json", "src/subs.json"];
-const DIRS = ["public/assets", "public/audio"];
+const DIRS = ["public/assets", "public/audio", "scripts/stt"];
 
 const rm = (p) => fs.rmSync(p, { recursive: true, force: true });
 function copy(src, dst) {

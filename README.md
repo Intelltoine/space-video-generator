@@ -19,19 +19,3 @@ node scripts/gen-assets.mjs && node scripts/contact-sheet.mjs && node scripts/pr
 node scripts/make-audio.mjs && node scripts/stills.mjs --sheet
 npx remotion render Film out/A01.mp4 --gl=angle --codec=h264 --crf=18 && node scripts/use.mjs --save
 ```
-
-## Contenu du repo
-
-| Chemin | Rôle |
-|---|---|
-| `SKILL.md` | le workflow suivi par Claude (cadrage → voix → sous-titres → assets → audio → mise en scène → rendu → publication) |
-| `scripts/` | pipeline : `setup.mjs`, `use.mjs`, `fal.mjs`, `gen-vo.mjs`, `build-timeline.mjs`, `gen-subs.mjs`, `gen-assets.mjs`, `process-assets.mjs`, `contact-sheet.mjs`, `make-audio.mjs`, `stills.mjs` |
-| `templates/base/` | moteur Remotion + three.js en 9:16 |
-| `references/` | `space.md` (recettes par série), `prompts.md`, `wow.md`, `pitfalls.md` |
-| `plan/` | les 90 vidéos (scripts, prompts, calendrier, budget) |
-
-## Installer le skill dans Claude Code
-
-```bash
-git clone https://github.com/Intelltoine/space-video-generator ~/.claude/skills/cosmos-shorts
-```

@@ -18,6 +18,34 @@ philosophie (« un film, pas un diaporama »), mais recâblé pour la chaîne :
 
 `<skill>` = le dossier de ce SKILL.md. Tous les scripts s'exécutent depuis la racine du projet vidéo.
 
+## Deux façons d'exécuter
+
+**A. Dans claude.ai (Claude exécute tout, Antoine valide).** Le génératif passe par le **connecteur Fal**
+(`mcp__Fal__run_model`, `submit_job`, `get_job_result` ; charger les outils avec `tool_search` « fal »), sans clé dans
+le projet. Les fichiers produits sont téléchargés dans le conteneur avec `node scripts/ingest.mjs …`, puis tout le
+reste (timeline, sous-titres, découpe, audio, rendu) tourne dans le conteneur avec les scripts du skill.
+- Voix : `run_model` sur l'endpoint `tts` de `scripts/fal-models.json` (mêmes paramètres que `gen-vo.mjs`), puis
+  `node scripts/ingest.mjs vo "<voix>" <id> <url>` pour chaque réplique.
+- Images : `run_model` FLUX.2 (prompt + `styleSuffix`, `image_size`, `seed`) → `ingest.mjs asset <id> <url> --full` ;
+  détourage : `run_model` sur `cutout` avec l'URL de l'image → `ingest.mjs asset <id> <url>`.
+- Timings : après `build-timeline`, transmettre chaque `public/audio/vo/final/<id>.wav` à Scribe (si le connecteur
+  n'accepte pas de fichier local, utiliser `mcp__Fal__upload_file`), écrire la réponse JSON dans
+  `scripts/stt/<id>.json`, puis `node scripts/gen-subs.mjs` (il lit ces fichiers au lieu d'appeler fal).
+- Vérifier d'abord que le conteneur peut télécharger depuis `*.fal.media` (`curl -sI` sur une URL de résultat) : si
+  la réponse porte `x-deny-reason: host_not_allowed`, le domaine n'est pas autorisé dans les paramètres réseau
+  d'Antoine (ou le réglage ne s'applique qu'aux nouvelles conversations) : le lui dire, ne pas contourner.
+- Rendu : `node scripts/render.mjs` utilise le navigateur headless déjà présent et le rendu logiciel. Sans GPU,
+  compter ~2 s par frame (≈ 40 min pour 40 s) : le lancer en arrière-plan (`nohup … > out/render.log &`) et
+  suivre le log. Montrer d'abord la planche d'images fixes pour ne pas rendre une vidéo à refaire.
+- Le conteneur repart de zéro à chaque conversation : en fin de session, livrer `etat-chaine.zip` (`mascotte/`,
+  `templates-local/`, `videos/*/scripts`, `videos/*/src`, `videos/*/publish.json`, `plan.json`) et le reprendre en
+  début de session suivante (Antoine le renvoie, ou il est dans son repo GitHub).
+
+**B. Sur la machine d'Antoine (Claude Code / Cowork).** Clé `FAL_KEY` dans `.env`, et les scripts `gen-vo.mjs`,
+`gen-assets.mjs`, `gen-subs.mjs` appellent fal directement. Rendu GPU bien plus rapide (`--gl=angle`).
+
+Les étapes ci-dessous sont les mêmes dans les deux cas ; seule la façon d'appeler fal change.
+
 ## Ce qu'il faut lire, et quand
 
 | Fichier | Quand |
@@ -140,7 +168,7 @@ Si un connecteur Remotion est disponible dans la conversation, l'utiliser pour r
 les mêmes réglages. Sinon :
 
 ```
-npx remotion render Film out/<ID>.mp4 --gl=angle --codec=h264 --crf=18 --concurrency=4
+node scripts/render.mjs        # -> out/<ID>.mp4 ; navigateur local, angle si GPU sinon swangle
 ```
 
 Puis : `ffprobe` (durée, vidéo 1080×1920 + audio), 3 images extraites (`ffmpeg -ss`) aux moments non vus,

@@ -2,7 +2,7 @@ import React, { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { useThree } from "@react-three/fiber";
 import { useCurrentFrame, useRemotionEnvironment } from "remotion";
-import { NARRATOR } from "../film.config";
+import { NARRATOR, SKY } from "../film.config";
 import { CAM_Z, EV, FOV, camPos, progressAt, shakeAt } from "../lib/camera";
 import { envAt } from "../lib/env";
 import { META } from "../lib/textures";
@@ -67,7 +67,7 @@ export const World: React.FC<Props> = ({ frame, mouth, fx = true, fxLevel = 4 })
     sun.position.set(c.x + sh.x + 12, c.y + 50, c.z + 14);
     sun.target.position.set(c.x + sh.x, c.y, c.z);
     sun.target.updateMatrixWorld(true);
-    const light = 1.25 + 0.35 * env.sun;
+    const light = SKY.gain * (1.25 + 0.35 * env.sun);
     (bgMat.uniforms.uTop.value as THREE.Color).setRGB(env.bg[0] * light * dead, env.bg[1] * light * dead, env.bg[2] * light * dead);
     (bgMat.uniforms.uBottom.value as THREE.Color).setRGB(env.bg[0] * 0.45 * dead, env.bg[1] * 0.45 * dead, env.bg[2] * 0.5 * dead);
     bg.position.set(c.x + sh.x, c.y + sh.y, c.z - 95);
@@ -82,7 +82,7 @@ export const World: React.FC<Props> = ({ frame, mouth, fx = true, fxLevel = 4 })
       <primitive object={stuff.amb} />
       <primitive object={stuff.sun} />
       <primitive object={stuff.sun.target} />
-      <Rays frame={frame} />
+      {SKY.rays && <Rays frame={frame} />}
       <Story frame={frame} />
       {hasNarrator && <Narrator frame={frame} mouth={mouth} />}
       <Particles frame={frame} emitter={emitter} burstOrigin={hasNarrator ? (f) => { const p = narratorPose(f); return { x: p.x, y: p.y - NARRATOR.width * 0.5, z: p.z - 0.5 }; } : undefined} />

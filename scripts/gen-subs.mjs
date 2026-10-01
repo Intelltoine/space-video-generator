@@ -1,6 +1,6 @@
 // Sous-titres mot à mot : Scribe v2 (fal.ai) donne les timings, le texte vient TOUJOURS du script
 // (aucune faute de transcription possible à l'écran). À lancer après build-timeline.mjs.
-// Usage : node scripts/gen-subs.mjs
+// Usage : node scripts/gen-subs.mjs   (utilise scripts/stt/<id>.json s'il existe : sortie Scribe obtenue via le connecteur Fal)
 // Par réplique de vo-script.json : `text` (ce qui est dit) et `display` optionnel (ce qui est affiché,
 // ex. chiffres au lieu de lettres). Sortie : src/subs.json { words: [{ t, from, to, line, emph }] }
 import fs from "node:fs";
@@ -54,7 +54,9 @@ for (const beat of tl.beats) {
   const line = script.lines.find((l) => l.id === beat.id);
   const file = path.join("public", beat.voSrc);
   const said = tokens(line.text);
-  const out = await retry(() => falRun(M.stt, { audio_url: dataUri(file), language_code: script.voice?.stt_language || "fra", tag_audio_events: false, diarize: false }, { label: "stt " + beat.id }), 3, beat.id);
+  // résultat Scribe déjà récupéré (connecteur Fal) : scripts/stt/<id>.json ; sinon appel direct avec FAL_KEY
+  const cached = path.join("scripts", "stt", beat.id + ".json");
+  const out = fs.existsSync(cached) ? JSON.parse(fs.readFileSync(cached, "utf8")) : await retry(() => falRun(M.stt, { audio_url: dataUri(file), language_code: script.voice?.stt_language || "fra", tag_audio_events: false, diarize: false }, { label: "stt " + beat.id }), 3, beat.id);
   const stt = (out.words || []).filter((w) => (w.type ?? "word") === "word" && w.text.trim());
   const dur = beat.dur / FPS;
   const map = align(said, stt);

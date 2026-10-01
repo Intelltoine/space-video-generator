@@ -1,13 +1,13 @@
 // Sous-titres karaoké pour les shorts : 1 à 3 mots par groupe, mot prononcé en surbrillance, pop à l'entrée.
 // Données : src/subs.json (scripts/gen-subs.mjs). Texte = script exact, timings = Scribe v2.
 import React from "react";
-import { loadFont } from "@remotion/google-fonts/Montserrat";
 import raw from "../subs.json";
 import { SUBS } from "../film.config";
 import { TL } from "../lib/camera";
 import { smoothstep } from "../lib/math";
+import { SANS_BOLD } from "./fonts";
 
-const { fontFamily } = loadFont("normal", { weights: ["800", "900"], subsets: ["latin", "latin-ext"] });
+const fontFamily = SANS_BOLD;
 type W = { t: string; from: number; to: number; line: string; emph: boolean };
 const WORDS = (raw as { words: W[] }).words;
 

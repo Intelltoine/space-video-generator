@@ -5,10 +5,11 @@ import path from "node:path";
 import { bundle } from "@remotion/bundler";
 import { renderStill, selectComposition } from "@remotion/renderer";
 import sharp from "sharp";
+import { findBrowser, defaultGl } from "./browser.mjs";
 
 const args = process.argv.slice(2);
 const opt = (k, d) => (args.find((a) => a.startsWith(`--${k}=`)) || `--${k}=${d}`).split("=")[1];
-const scale = Number(opt("scale", "0.5")), gl = opt("gl", "angle"), comp = opt("comp", "Film");
+const scale = Number(opt("scale", "0.5")), gl = opt("gl", defaultGl()), comp = opt("comp", "Film");
 const sheet = args.includes("--sheet");
 const logLevel = args.includes("--verbose") ? "verbose" : "warn";
 const frames = args.filter((a) => !a.startsWith("--")).map(Number);
@@ -21,14 +22,15 @@ const t0 = Date.now();
 const serveUrl = await bundle({ entryPoint: path.resolve("src/index.ts"), onProgress: () => {} });
 console.log("bundle ok", ((Date.now() - t0) / 1000).toFixed(0) + "s");
 const chromiumOptions = { gl };
-const composition = await selectComposition({ serveUrl, id: comp, chromiumOptions, logLevel, inputProps });
+const browserExecutable = findBrowser();
+const composition = await selectComposition({ serveUrl, id: comp, chromiumOptions, logLevel, inputProps, browserExecutable });
 if (!frames.length) { const n = composition.durationInFrames; for (let i = 0; i < 12; i++) frames.push(Math.round((n - 1) * (i + 0.5) / 12)); }
 fs.mkdirSync("out/stills", { recursive: true });
 const outs = [];
 for (const frame of frames) {
   const t1 = Date.now();
   const output = `out/stills/f${String(frame).padStart(4, "0")}${suffix}.png`;
-  await renderStill({ composition, serveUrl, output, frame, scale, chromiumOptions, logLevel, timeoutInMilliseconds: 120000, inputProps });
+  await renderStill({ composition, serveUrl, output, frame, scale, chromiumOptions, logLevel, browserExecutable, timeoutInMilliseconds: 120000, inputProps });
   outs.push(output);
   console.log("still", frame, ((Date.now() - t1) / 1000).toFixed(1) + "s");
 }

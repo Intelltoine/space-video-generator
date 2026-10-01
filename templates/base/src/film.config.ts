@@ -43,11 +43,14 @@ export const SHAKES: { event: string; amp: number; freq: number; decay: number }
   { event: "impact", amp: 0.45, freq: 9, decay: 2.0 },
 ];
 
+/** Fond : gain de luminosité du dégradé et rayons de lumière (utiles sous l'eau ou dans une atmosphère, pas dans le vide) */
+export const SKY = { gain: 0.55, rays: false };
+
 /** Ambiance selon l'avancement p (0 = début, 1 = fin). Dans l'espace : fond presque noir teinté,
  *  brouillard très léger (il sert à la profondeur, pas au réalisme), "sun" = lumière de l'étoile,
  *  dust = poussière/étoiles proches qui défilent, sparks = scintillements. */
 export const ENV_KEYS = [
-  { p: 0.0, bg: "#07102a", near: 30, far: 120, ambient: 0.35, sun: 1.6, spot: 0.0, dust: 0.45, sparks: 0.2 },
+  { p: 0.0, bg: "#060b22", near: 30, far: 120, ambient: 0.35, sun: 1.6, spot: 0.0, dust: 0.45, sparks: 0.2 },
   { p: 0.5, bg: "#050a1c", near: 30, far: 100, ambient: 0.22, sun: 1.3, spot: 0.0, dust: 0.6, sparks: 0.35 },
   { p: 1.0, bg: "#020309", near: 30, far: 90, ambient: 0.12, sun: 1.0, spot: 0.0, dust: 0.75, sparks: 0.5 },
 ];
